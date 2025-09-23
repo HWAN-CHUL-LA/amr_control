@@ -5,7 +5,6 @@ import can
 import struct
 import time
 import sys
-from os.path import basename
 from pynput import keyboard
 
 # --- 상수 설정 ---
@@ -38,7 +37,7 @@ current_profile_accel = 150000     # 중간값에서 시작
 # 키 입력당 변경 단위
 VELOCITY_UNIT = 25000
 ACCEL_UNIT = 25000
-DEGREE_UNIT = 0.1
+DEGREE_UNIT = 1.0
 
 # --- CAN 통신 함수 ---
 def send_sdo_write(bus, node_id, index, sub_index, value, size):
@@ -156,29 +155,14 @@ def main():
     NODE_CONFIG = {motor['id']: motor['bus'] for motor in STEER_MOTORS}
 
     # (이하 코드는 이전과 유사하게 제어 대상 설정)
-    args = sys.argv[1:]
-    script_name = basename(sys.argv[0])
-
-    if not args:
-        print(f"사용법: python3 {script_name} [NODE_ID ... | all]")
+    if len(sys.argv) != 2:
+        print("사용법: python3 keyboard_steer_control.py [NODE_ID | 'all']")
         return
-
-    if len(args) == 1 and args[0].lower() == 'all':
+    node_arg = sys.argv[1]
+    if node_arg.lower() == 'all':
         target_nodes = list(NODE_CONFIG.keys())
     else:
-        try:
-            requested_nodes = sorted({int(arg) for arg in args})
-        except ValueError:
-            print("노드 ID는 정수로 입력해야 합니다.")
-            return
-
-        invalid = [node_id for node_id in requested_nodes if node_id not in NODE_CONFIG]
-        if invalid:
-            print(f"알 수 없는 노드 ID: {invalid}")
-            print(f"사용 가능한 노드: {sorted(NODE_CONFIG.keys())}")
-            return
-
-        target_nodes = requested_nodes
+        target_nodes = [int(node_arg)]
 
     try:
         # CAN 버스 및 모터 초기화
@@ -227,9 +211,9 @@ def main():
         print(f"\n[오류] 프로그램 실행 중 에러: {e}")
     finally:
         if buses:
-            # print("\n\n프로그램을 종료합니다. 모터를 원점으로 이동합니다...")
-            # command_all_nodes('position', 0.0)
-            # trigger_motion()
+            print("\n\n프로그램을 종료합니다. 모터를 원점으로 이동합니다...")
+            command_all_nodes('position', 0.0)
+            trigger_motion()
             time.sleep(2) # 원점 이동 시간 대기
             for bus in buses.values():
                 bus.shutdown()

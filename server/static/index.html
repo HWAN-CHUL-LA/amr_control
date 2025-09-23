@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AMR Control Console</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>AMR Control Console</h1>
+      <span id="connection-status" class="status-indicator">Connecting…</span>
+    </header>
+    <main>
+      <section class="card">
+        <h2>Status</h2>
+        <div class="status-grid">
+          <div>
+            <h3>Drive</h3>
+            <p>Target speed: <span id="drive-target">0.00</span> m/s</p>
+            <p>Target accel: <span id="drive-accel">0.00</span> m/s²</p>
+            <p>Actual velocity:</p>
+            <ul id="drive-actual-velocity"></ul>
+            <p>Actual position:</p>
+            <ul id="drive-actual-position"></ul>
+          </div>
+          <div>
+            <h3>Steer</h3>
+            <p>Target angle: <span id="steer-target">0.00</span> °</p>
+            <p>Profile velocity: <span id="steer-velocity">0.00</span> °/s</p>
+            <p>Profile accel: <span id="steer-accel">0.00</span> °/s²</p>
+            <p>Actual angle:</p>
+            <ul id="steer-actual-angle"></ul>
+            <p>Actual velocity:</p>
+            <ul id="steer-actual-velocity"></ul>
+            <p>Offsets:</p>
+            <ul id="steer-offsets"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Drive Control</h2>
+        <form id="drive-set-speed-form" class="form-row">
+          <label for="drive-speed-input">Target speed (m/s)</label>
+          <input id="drive-speed-input" type="number" step="0.01" value="0" />
+          <button type="submit">Set</button>
+        </form>
+        <div class="button-row">
+          <button type="button" data-action="drive-speed" data-sign="1">Speed +</button>
+          <button type="button" data-action="drive-speed" data-sign="-1">Speed -</button>
+          <button type="button" id="drive-stop">Emergency Stop</button>
+        </div>
+        <div class="button-row">
+          <button type="button" data-action="drive-accel" data-sign="1">Accel +</button>
+          <button type="button" data-action="drive-accel" data-sign="-1">Accel -</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Steer Control</h2>
+        <form id="steer-set-angle-form" class="form-row">
+          <label for="steer-angle-input">Target angle (°)</label>
+          <input id="steer-angle-input" type="number" step="0.1" value="0" />
+          <button type="submit">Set</button>
+        </form>
+        <div class="button-row">
+          <button type="button" data-action="steer-angle" data-sign="1">Angle +</button>
+          <button type="button" data-action="steer-angle" data-sign="-1">Angle -</button>
+          <button type="button" id="steer-zero">Go To 0°</button>
+        </div>
+        <div class="button-row">
+          <button type="button" data-action="steer-velocity" data-sign="1">Velocity +</button>
+          <button type="button" data-action="steer-velocity" data-sign="-1">Velocity -</button>
+        </div>
+        <div class="button-row">
+          <button type="button" data-action="steer-accel" data-sign="1">Accel +</button>
+          <button type="button" data-action="steer-accel" data-sign="-1">Accel -</button>
+        </div>
+        <form id="steer-offset-form" class="form-row">
+          <label for="steer-offset-node">Offset Node</label>
+          <select id="steer-offset-node">
+            <option value="2">Front Left (2)</option>
+            <option value="4">Front Right (4)</option>
+            <option value="6">Rear Left (6)</option>
+            <option value="8">Rear Right (8)</option>
+          </select>
+          <label for="steer-offset-delta">Δ (°)</label>
+          <input id="steer-offset-delta" type="number" step="0.01" value="0.00" />
+          <button type="submit">Apply</button>
+        </form>
+        <div class="button-row">
+          <button type="button" id="steer-save-offsets">Save Offsets</button>
+          <button type="button" id="steer-load-offsets">Load Offsets</button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span id="toast" hidden></span>
+    </footer>
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>
